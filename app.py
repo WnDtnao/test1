@@ -1,12 +1,12 @@
 from flask import Flask, app, render_template, request, redirect, url_for
-from registro import registros
+from registros import Registro
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
 @app.route('/')
 def inicio():
-    return redirect(url_for('registro'))
+    return redirect('/registro')
 
-@app.route('/registro', methods=['POST'])
+@app.route('/registro', methods=['POST', 'GET'])
 def prosesar_registro():
     if request.method == 'POST':
         nombre = request.form['nombre']
@@ -19,11 +19,13 @@ def prosesar_registro():
             'edad': edad
         }
 
+        Registro.save(data)
         return redirect(url_for('lista'))
     return render_template('registro.html')
 
 @app.route('/lista')
 def lista():
+    registros = Registro.get_all()
     return render_template('lista.html', registros = registros)
 
 if __name__ == '__main__':
